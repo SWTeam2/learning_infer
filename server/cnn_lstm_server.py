@@ -7,6 +7,8 @@ import torch
 import requests
 import uvicorn
 import tempfile
+import csv
+import json
 
 import base64
 import os
@@ -28,7 +30,22 @@ from sklearn.gaussian_process.kernels import DotProduct, RBF, RationalQuadratic
 
 app = FastAPI()
 
+def save_results(results, file_name, fig):
+    time = datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
+    # Save the results to a CSV file
+    with open(os.path.join('results', file_name + time + '.csv'), 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile, delimiter=',')
+        for key, value in results.items():
+            writer.writerow([key, value])
 
+    # Save the results to a JSON file
+    with open(os.path.join('results', file_name + time + '.json'), 'w') as jsonfile:
+        json.dump(results, jsonfile)
+
+        # Save the plot image
+    
+    fig_bytes = fig.savefig(os.path.join('results/plots', time + '.png'), format='png')
+    return fig_bytes
 
 @app.post("/predict")
 async def predict(file: UploadFile):
@@ -42,28 +59,21 @@ async def predict(file: UploadFile):
     device=torch.device("cuda:0" if torch.cuda.is_available() else "cpu") # Declaring a variable "device" which will hold the device(i.e. either GPU or CPU) we are 
                                                                       #training the model on
     model = CNN_LSTM_FP().to(device)
-    model.load_state_dict(torch.load('/home/i4624/vscode/gitclone/SWbootProject_2023-7/Team-project/model/CNN-LSTM/inout/cnn_lstm_model3.pth'))
+    model.load_state_dict(torch.load('../model/weight/cnn_lstm_model_gpu2_epoch50_batch32.pth',map_location=device))
 
     # Do the inference
     results = infer_model(model, file_path, device)
 
+    #flotting save
     fig, ax = plt.subplots(nrows=1, ncols=1, figsize=[10,10])
     ax.scatter(range(len(results['predictions'])), results['predictions'], c='b', marker='.', label='predictions')
     ax.legend()
-
-    # Save the PNG file
-    fig_bytes = fig.savefig('temp.png', format='png')
-    encoded_image = base64.b64encode(fig_bytes.read())
-
-    # Save the PNG file to the server directory
-    filename = file.filename
-    date = datetime.datetime.now().strftime('%Y-%m-%d')
-    file_path = os.path.join('../output', date + '.png')
-    with open(file_path, 'wb') as f:
-        f.write(fig_bytes)
+    filename = 'inf_result'
+    # Save the results
+    image = save_results(results , filename , fig)
 
     # Return the prediction
-    return encoded_image
+    return image
 
 
 def save_uploaded_file(file):
@@ -215,7 +225,7 @@ def model_inference_helper(model, dataloader, device):
 def infer_model(model, file, device):
     test_dataset = PHMTestDataset_Sequential(dataset=file)
 
-    test_dataloader = DataLoader(test_dataset, batch_size=16, shuffle=False, num_workers=1)
+    test_dataloader = DataLoader(test_dataset, batch_size=32, shuffle=False, num_workers=1)
 
     results = model_inference_helper(model, test_dataloader, device)
 
