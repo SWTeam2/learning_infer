@@ -64,6 +64,7 @@ async def predict(file: UploadFile):
     # Do the inference
     results = infer_model(model, file_path, device)
 
+    
     #flotting save
     fig, ax = plt.subplots(nrows=1, ncols=1, figsize=[10,10])
     ax.scatter(range(len(results['predictions'])), results['predictions'], c='b', marker='.', label='predictions')
@@ -234,4 +235,4 @@ def infer_model(model, file, device):
     return results
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="localhost", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=48000)
