@@ -32,3 +32,6 @@ server
 가중치 출력 코드 
 이렇게 나눌 예정 
 
+## Bearing1_1, Bearing1_2에 대한 모델 가중치 설명
+하이퍼파라미터 값 수정(Dropout, learning rate, L2 regularization) 미세조정 하였지만 loss 값이 크게 변하지 않음
+기존에 사용하였던 하이퍼파라미터 값 그대로 사용해도 되겠다고 판단함
