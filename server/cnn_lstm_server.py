@@ -63,7 +63,8 @@ async def predict(file: UploadFile):
 
     # Do the inference
     results = infer_model(model, file_path, device)
-
+    results['timestamps'] = sample_data['timestamps']
+    
     #flotting save
     fig, ax = plt.subplots(nrows=1, ncols=1, figsize=[10,10])
     ax.scatter(range(len(results['predictions'])), results['predictions'], c='b', marker='.', label='predictions')
