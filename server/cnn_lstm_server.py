@@ -68,6 +68,7 @@ async def predict(file: UploadFile):
     results = infer_model(model, file_path, device)
     results['timestamps'] = sample_data['timestamps']
 
+    results['timestamps'] = [ts.strftime('%H:%M:%S') for ts in results['timestamps']]
     
     #flotting save
     fig, ax = plt.subplots(nrows=1, ncols=1, figsize=[10,10])
