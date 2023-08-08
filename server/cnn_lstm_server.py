@@ -239,5 +239,7 @@ def infer_model(model, file, device):
 
     return results
 
+
+## background running uvicorn --reload cnn_lstm_server:app --port 48000 --host 0.0.0.0 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=48000)
