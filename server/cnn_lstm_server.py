@@ -2,6 +2,7 @@ import datetime
 import io
 import fastapi
 from fastapi import FastAPI, File, UploadFile
+from fastapi.responses import FileResponse
 import multipart
 import torch
 import requests
@@ -37,15 +38,17 @@ def save_results(results, file_name, fig):
         writer = csv.writer(csvfile, delimiter=',')
         for key, value in results.items():
             writer.writerow([key, value])
-
+    
     # Save the results to a JSON file
     with open(os.path.join('results', file_name + time + '.json'), 'w') as jsonfile:
         json.dump(results, jsonfile)
 
+    jsonfile_path = os.path.join('results', file_name + time + '.json')
+
         # Save the plot image
     
     fig_bytes = fig.savefig(os.path.join('results/plots', time + '.png'), format='png')
-    return fig_bytes
+    return jsonfile_path
 
 @app.post("/predict")
 async def predict(file: UploadFile):
@@ -71,10 +74,12 @@ async def predict(file: UploadFile):
     ax.legend()
     filename = 'inf_result'
     # Save the results
-    image = save_results(results , filename , fig)
-
-    # Return the prediction
-    return image
+    jsonfile = save_results(results , filename , fig)
+    
+    return FileResponse(
+        path=jsonfile,
+        media_type='application/json'
+    )
 
 
 def save_uploaded_file(file):
