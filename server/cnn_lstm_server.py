@@ -66,6 +66,7 @@ async def predict(file: UploadFile):
 
     # Do the inference
     results = infer_model(model, file_path, device)
+    results['timestamps'] = sample_data['timestamps']
 
     
     #flotting save
