@@ -2,6 +2,7 @@ import datetime
 import io
 import fastapi
 from fastapi import FastAPI, File, UploadFile
+from fastapi.responses import FileResponse
 import multipart
 import torch
 import requests
@@ -37,15 +38,17 @@ def save_results(results, file_name, fig):
         writer = csv.writer(csvfile, delimiter=',')
         for key, value in results.items():
             writer.writerow([key, value])
-
+    
     # Save the results to a JSON file
     with open(os.path.join('results', file_name + time + '.json'), 'w') as jsonfile:
         json.dump(results, jsonfile)
 
+    jsonfile_path = os.path.join('results', file_name + time + '.json')
+
         # Save the plot image
     
     fig_bytes = fig.savefig(os.path.join('results/plots', time + '.png'), format='png')
-    return fig_bytes
+    return jsonfile_path
 
 @app.post("/predict")
 async def predict(file: UploadFile):
@@ -64,16 +67,19 @@ async def predict(file: UploadFile):
     # Do the inference
     results = infer_model(model, file_path, device)
 
+    
     #flotting save
     fig, ax = plt.subplots(nrows=1, ncols=1, figsize=[10,10])
     ax.scatter(range(len(results['predictions'])), results['predictions'], c='b', marker='.', label='predictions')
     ax.legend()
     filename = 'inf_result'
     # Save the results
-    image = save_results(results , filename , fig)
-
-    # Return the prediction
-    return image
+    jsonfile = save_results(results , filename , fig)
+    
+    return FileResponse(
+        path=jsonfile,
+        media_type='application/json'
+    )
 
 
 def save_uploaded_file(file):
@@ -233,5 +239,7 @@ def infer_model(model, file, device):
 
     return results
 
+
+## background running uvicorn --reload cnn_lstm_server:app --port 48000 --host 0.0.0.0 
 if __name__ == "__main__":
-    uvicorn.run(app, host="localhost", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=48000)
