@@ -2,6 +2,7 @@ import datetime
 import io
 import fastapi
 from fastapi import FastAPI, File, UploadFile
+from fastapi.responses import FileResponse
 import multipart
 import torch
 import requests
@@ -30,79 +31,65 @@ from sklearn.gaussian_process.kernels import DotProduct, RBF, RationalQuadratic
 
 app = FastAPI()
 
+# timestamp열을 추가해서 csv, json 파일로 결과와 이미지를 저장
 def save_results(results, file_name, fig):
     time = datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
-    # Save the results to a CSV file
+
     with open(os.path.join('results', file_name + time + '.csv'), 'w', newline='') as csvfile:
         writer = csv.writer(csvfile, delimiter=',')
         for key, value in results.items():
             writer.writerow([key, value])
 
-    # Save the results to a JSON file
     with open(os.path.join('results', file_name + time + '.json'), 'w') as jsonfile:
         json.dump(results, jsonfile)
 
-        # Save the plot image
+    jsonfile_path = os.path.join('results', file_name + time + '.json')
     
     fig_bytes = fig.savefig(os.path.join('results/plots', time + '.png'), format='png')
-    return fig_bytes
+    return jsonfile_path
 
 @app.post("/predict")
+# 업로드된 파일을 미리 학습된 모델을 사용하여 추론후 그 결과물(csv,json)파일을 반환
 async def predict(file: UploadFile):
-    # Read the file contents
+
     file_path = save_uploaded_file(file)
 
-    # Load the data from the file
     sample_data = load_data_from_pfile(file_path)
 
-    # Load the PyTorch model
-    device=torch.device("cuda:0" if torch.cuda.is_available() else "cpu") # Declaring a variable "device" which will hold the device(i.e. either GPU or CPU) we are 
-                                                                      #training the model on
+    device=torch.device("cuda:0" if torch.cuda.is_available() else "cpu") 
+
     model = CNN_LSTM_FP().to(device)
-    model.load_state_dict(torch.load('../model/weight/cnn_lstm_model_gpu2_epoch50_batch32.pth',map_location=device))
+    model.load_state_dict(torch.load('../model/weight/cnn_lstm_model_gpu2_epoch60_batch32_1and2_ONLY.pth',map_location=device))
 
-    # Do the inference
     results = infer_model(model, file_path, device)
+    results['timestamps'] = sample_data['timestamps']
 
-    #flotting save
+    results['timestamps'] = [ts.strftime('%H:%M:%S') for ts in results['timestamps']]
+    
     fig, ax = plt.subplots(nrows=1, ncols=1, figsize=[10,10])
     ax.scatter(range(len(results['predictions'])), results['predictions'], c='b', marker='.', label='predictions')
     ax.legend()
     filename = 'inf_result'
-    # Save the results
-    image = save_results(results , filename , fig)
 
-    # Return the prediction
-    return image
+    jsonfile = save_results(results , filename , fig)
+    
+    return FileResponse(
+        path=jsonfile,
+        media_type='application/json'
+    )
 
-
+# 업로드된 파일을 임시 디렉토리에 저장
 def save_uploaded_file(file):
-    """
-    Save the uploaded file to a temporary directory.
 
-    Args:
-        file: The uploaded file.
-
-    Returns:
-        The path to the saved file.
-    """
     filename = file.filename
     file_path = os.path.join(tempfile.gettempdir(), filename)
     with open(file_path, 'wb') as f:
         f.write(file.file.read())
     return file_path
 
-    
-def load_data_from_pfile(file_path):  # helper function
-    """
-    Load the data from the pfile.
+# 업로드한 파일을 불러옴
+def load_data_from_pfile(file_path):  
 
-    Args:
-        file: The file containing the data.
-
-    Returns:
-        The data.
-    """
     with open(file_path, 'rb') as pfile:
         sample_data = pkl.load(pfile)
     return sample_data
@@ -110,16 +97,9 @@ def load_data_from_pfile(file_path):  # helper function
 
 
 
-
+# PHM 데이터를 다루기 위한 시퀀스 형태의 데이터셋 클래스 정의
 class PHMTestDataset_Sequential(Dataset):
-    """PHM data set where each item is a sequence"""
     def __init__(self, dataset='', seq_len=5):
-        """
-        dataset_id = index of dataset to read from
-        indices = indices from the dataset that need to be included
-        seq_len = length of the output sequence
-        i.e., return a sequence of length `seq_len` from the dataset as `x` and fault probability of the last frame as `y`
-        """
         self.data = load_data_from_pfile(dataset)
         self.seq_len = seq_len
     
@@ -163,21 +143,20 @@ class CNN_CWT_Encoder(nn.Module):
         self.dropout1 = nn.Dropout(p=0.2)
 
     def forward(self, x):
-        # input shape = [Nx2x128x128]
-        x = self.conv1(x) # [Nx16x128x128]
-        x = self.pool1(x) # [Nx16x64x64]
-        x = self.conv2(x) # [Nx32x64x64]
-        x = self.pool2(x) # [Nx32x32x32]
-        x = self.conv3(x) # [Nx64x32x32]
-        x = self.pool3(x) # [Nx64x16x16]
-        x = self.conv4(x) # [Nx128x16x16]
-        x = self.pool4(x) # [Nx128x8x8]
-        x = self.flatten(x) # [Nx8192] {128*8*8=8192} (N => batch size, 128 => no. of channels, 8*8 => height of image*width of image)
-        x = self.fc1(x) # [Nx256] 
-        # x = self.dropout1(x) # apply dropout (Dropout is much harder to implement in LSTM)
-        x = nn.ReLU()(x) # apply ReLU activation
-        x = self.fc2(x) # [Nx128]
-        x = nn.ReLU()(x) # apply ReLU activation
+        x = self.conv1(x) 
+        x = self.pool1(x) 
+        x = self.conv2(x) 
+        x = self.pool2(x) 
+        x = self.conv3(x) 
+        x = self.pool3(x) 
+        x = self.conv4(x)
+        x = self.pool4(x) 
+        x = self.flatten(x) 
+        x = self.fc1(x) 
+       
+        x = nn.ReLU()(x)
+        x = self.fc2(x) 
+        x = nn.ReLU()(x) 
         return x
 
 
@@ -189,20 +168,15 @@ class CNN_LSTM_FP(nn.Module):
         self.fc = nn.Linear(256, 1)
     
     def forward(self, x):
-        # input shape = [N x l x 2 x 128 x 128] Here, N - batch size, l - sequence length (i.e. SEQ_LEN = 5),  2 - no. of channels or no. of filters, 
-                                                      # 128 * 128 - height of an image * width of an image
         batch_size, seq_len, C, H, W = x.size()
-        x = x.view(batch_size*seq_len, C, H, W) # transform input of shape [N x l x 2 x 128 x 128] into input of shape [(Nxl) x 2 x 128 x 128]. basically,
-                                                # converting(= transforming) into sequences. [(Nxl) x 2 x 128 x 128] - transformed input sequence
-        x = self.encoder(x) # pass transformed input sequence through CNN Encoder, CNN Encoder converts the image input data sequence of shape 
-                            # [(Nxl) x 2 x 128 x 128] into linear vector sequence by flatenning, output feature vector sequence shape = [(Nxl) x 128]
-        x = x.view(batch_size, seq_len, -1) # transform encoded feature vector sequence into time distributed(= shared, alloted, assigned) input as required by
-                                            # LSTM unit or LSTM cell
-        x, _ = self.lstm1(x) # pass transformed encoded feature vector sequence through LSTM unit or LSTM cell, _ variable contains the hidden layers or hidden
-                             # states of LSTM, we don't require those hidden layers in our implementation, therefore just stored in _ variable, and if we want
-                             # we can initialize(= activate, start) hidden states from _ variable, here hidden states are the array of zeroes
-        x = self.fc(x[:,-1,:]) # pass last vector sequence(i.e. output vector sequence of LSTM unit at last time step) through fully connected network layer
+
+        x = x.view(batch_size*seq_len, C, H, W) 
+        x = self.encoder(x)
+        x = x.view(batch_size, seq_len, -1) 
+        x, _ = self.lstm1(x)
+        x = self.fc(x[:,-1,:]) 
         x = nn.Sigmoid()(x)
+
         return x    
 
 
@@ -233,5 +207,6 @@ def infer_model(model, file, device):
 
     return results
 
+
 if __name__ == "__main__":
-    uvicorn.run(app, host="localhost", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8000)
