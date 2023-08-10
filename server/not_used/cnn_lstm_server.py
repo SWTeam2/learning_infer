@@ -28,26 +28,36 @@ from sklearn.gaussian_process import GaussianProcessRegressor
 from sklearn.gaussian_process.kernels import WhiteKernel, ExpSineSquared
 from sklearn.gaussian_process.kernels import DotProduct, RBF, RationalQuadratic
 
+# 추가된 코드
+from pathlib import Path
 
 app = FastAPI()
 
+#변경된 def
 def save_results(results, file_name, fig):
     time = datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
+    
+    results_path = Path('server/results')
+    
     # Save the results to a CSV file
-    with open(os.path.join('results', file_name + time + '.csv'), 'w', newline='') as csvfile:
+    csv_file_path = results_path / f"{file_name}{time}.csv"
+    with csv_file_path.open('w', newline='') as csvfile:
         writer = csv.writer(csvfile, delimiter=',')
         for key, value in results.items():
             writer.writerow([key, value])
     
     # Save the results to a JSON file
-    with open(os.path.join('results', file_name + time + '.json'), 'w') as jsonfile:
+    json_file_path = results_path / f"{file_name}{time}.json"
+    with json_file_path.open('w') as jsonfile:
         json.dump(results, jsonfile)
 
-    jsonfile_path = os.path.join('results', file_name + time + '.json')
+    jsonfile_path = str(json_file_path)
 
-        # Save the plot image
-    
-    fig_bytes = fig.savefig(os.path.join('results/plots', time + '.png'), format='png')
+    # Save the plot image
+    plots_path = results_path / 'plots'
+    plots_path.mkdir(parents=True, exist_ok=True)
+    plot_file_path = plots_path / f"{time}.png"
+    fig.savefig(str(plot_file_path), format='png')
     return jsonfile_path
 
 @app.post("/predict")
@@ -62,7 +72,7 @@ async def predict(file: UploadFile):
     device=torch.device("cuda:0" if torch.cuda.is_available() else "cpu") # Declaring a variable "device" which will hold the device(i.e. either GPU or CPU) we are 
                                                                       #training the model on
     model = CNN_LSTM_FP().to(device)
-    model.load_state_dict(torch.load('../model/weight/cnn_lstm_model_gpu2_epoch50_batch32.pth',map_location=device))
+    model.load_state_dict(torch.load('/home/poeun/learning_infer/model/weight/cnn_lstm_model_gpu2_epoch60_batch32_1and2_ONLY.pth',map_location=device))
 
     # Do the inference
     results = infer_model(model, file_path, device)
