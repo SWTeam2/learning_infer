@@ -6,9 +6,10 @@ from app.file_utils import save_results, save_uploaded_file
 import torch
 import matplotlib.pyplot as plt
 
-app = FastAPI()
 
-@app.post("/predict")
+route = FastAPI()
+
+@route.post("/predict")
 async def predict(file: UploadFile):
     # Read the file contents
     file_path = save_uploaded_file(file)
@@ -39,4 +40,3 @@ async def predict(file: UploadFile):
         media_type='application/json'
     )
 
-# Rest of the code remains the same

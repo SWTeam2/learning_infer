@@ -4,7 +4,8 @@ import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
 
-from server.app.data import PHMTestDataset_Sequential
+from .data import PHMTestDataset_Sequential
+
 
 
 def conv_bn_relu(in_channels, out_channels, kernel_size, stride=1, padding=0, dilation=1, groups=1, bias=True, padding_mode='zeros', batch_norm=True):
