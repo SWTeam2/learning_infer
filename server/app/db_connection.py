@@ -52,15 +52,6 @@ def insert_data(conn, csv_path, current_time):
     
     cur = conn.cursor()  # cursor
     
-        # only to first try
-    cur.execute("""CREATE TABLE RUL_result1 (
-        id serial PRIMARY KEY,  
-        infer_time timestamp,
-        RUL float,
-        RUL_time time
-    );
-    """)
-    
     with open(csv_path, "r") as csv_file:
         csv_reader = csv.reader(csv_file)
         next(csv_reader)
