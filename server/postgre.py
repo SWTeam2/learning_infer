@@ -19,10 +19,12 @@ conn = psycopg2.connect(
 
 cur = conn.cursor() # cursor
 
-cur.execute("""CREATE TABLE test_table (
-								name VARCHAR(32),
-								age INT);
-						""")    
+cur.execute("""CREATE TABLE test_return (
+    RUL float,
+    RUL_time timestamp,
+    infer_time timestamp
+);
+""")
 
 cur.execute("INSERT INTO test_table (name, age) VALUES ('spongebob', 12);")
 
