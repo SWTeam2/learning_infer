@@ -21,7 +21,7 @@ def save_uploaded_file(file):
     return file_path
 
 def save_results(results, file_name, fig, current_time):
-    time = current_time
+    time = current_time.strftime('%Y-%m-%d-%H-%M-%S')
     
     # Create a list of tuples for the aligned data
     aligned_data = list(zip(results['predictions'], results['timestamps']))
