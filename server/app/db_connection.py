@@ -32,11 +32,11 @@ def create_table_if_not_exists(conn):
 
     if not table_exists:
         # Create the table
-        cur.execute("""CREATE TABLE rul_result1 (
-            id serial PRIMARY KEY,  
+        cur.execute("""CREATE TABLE rul_result2 (
+            pred_id serial PRIMARY KEY,  
             infer_time timestamp,
-            RUL float,
-            RUL_time time
+            prediction float,
+            timestamp time
         );
         """)
         conn.commit()
