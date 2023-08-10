@@ -4,17 +4,30 @@ import pickle as pkl
 import pywt
 import numpy as np
 import pandas as pd
+import requests
+import csv
 
 
 # get data from DB
 def get_df(host, database, user, password, DATA_POINTS_PER_FILE):
     # request to DB
+    # REST API 경로에 접속하여 응답(Response) 데이터 받아오기
+    target = "https://jsonplaceholder.typicode.com/users"
+    params = {'param1': 'value1', 'param2': 'value'}
+    response = requests.post(url=target, data=data)
+
+    # Decode the response content as text
+    csv_data = response.text
     
+    # Use the `csv.reader` to parse the CSV data
+    csv_reader = csv.reader(csv_data.splitlines())
     
     # get new csv from DB
-    colname = ['hour', 'minute', 'second', 'microsecond', 'horiz accel', 'vert accel']
-    # df = 
+    colnames = ['hour', 'minute', 'second', 'microsecond', 'horiz accel', 'vert accel']
+    df = pd.DataFrame()
     
+    for col_name, row_list in zip(colnames, csv_reader):
+        df[col_name] = row_list
     
     return df
 
