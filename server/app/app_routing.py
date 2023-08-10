@@ -1,6 +1,6 @@
 from fastapi import FastAPI, UploadFile
 from fastapi.responses import FileResponse
-from app.model import CNN_LSTM_FP, infer_model
+from server.app.cnn_lstm import CNN_LSTM_FP, infer_model
 from app.data import load_data_from_pfile, PHMTestDataset_Sequential
 from app.file_utils import save_results, save_uploaded_file
 import torch
