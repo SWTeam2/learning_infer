@@ -27,12 +27,12 @@ def create_table_if_not_exists(conn):
     cur = conn.cursor()
 
     # Check if the table exists
-    cur.execute("SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'RUL_result1')")
+    cur.execute("SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'rul_result1')")
     table_exists = cur.fetchone()[0]
 
     if not table_exists:
         # Create the table
-        cur.execute("""CREATE TABLE RUL_result1 (
+        cur.execute("""CREATE TABLE rul_result1 (
             id serial PRIMARY KEY,  
             infer_time timestamp,
             RUL float,
@@ -40,9 +40,9 @@ def create_table_if_not_exists(conn):
         );
         """)
         conn.commit()
-        print("Table 'RUL_result1' created successfully.")
+        print("Table 'rul_result1' created successfully.")
     else:
-        print("Table 'RUL_result1' already exists.")
+        print("Table 'rul_result1' already exists.")
 
     cur.close()
 
