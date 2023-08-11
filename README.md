@@ -14,9 +14,10 @@ https://i4624.tk/sharing/tbUNwOayc
 
 ## 서버쪽 코드 구조 
 
+```
 server
-├── cnn_lstm_server.py
-├── out
+├── excute.py
+├── app
 └── uploads
     └── file1.txt
     └── file2.jpg
@@ -25,6 +26,7 @@ server
     └── result1.txt
     └── result2.jpg
     └── ...
+```
 
 ## model 코드 구조 
 
