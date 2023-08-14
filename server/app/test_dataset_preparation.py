@@ -13,16 +13,12 @@ import csv
 def get_df(host, database, user, password, DATA_POINTS_PER_FILE):
     # request to DB
     # REST API 경로에 접속하여 응답(Response) 데이터 받아오기
-    target = "https://win1.i4624.tk/process/"
-    data = {'bearing': 'a', 'start_line': 1, 'end_line': 10}
-    data = json.dumps(data)
-    response = requests.post(url=target, data=data)
-
-    # Decode the response content as text
-    csv_data = response.text
-
-    # Use the `csv.reader` to parse the CSV data
-    csv_reader = csv.reader(csv_data.splitlines())
+    target = "https://win1.i4624.tk/data/"
+    params = {'table': 'learning_table16', 'csv_num': 'acc_00001'}
+    response = requests.get(url=target, params=params)
+    data = response.json()
+    python_list = json.loads(data)
+    print(python_list[3])
 
     # get new csv from DB
     colnames = ['hour', 'minute', 'second',
@@ -116,3 +112,4 @@ def load_data(host, database, user, password, load_cnt=0):
         pkl.dump(data, f)
 
     return data
+
