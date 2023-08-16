@@ -103,7 +103,7 @@ def infer_model(model, file, device):
     data = load_data_from_pfile(file)
     test_dataset = PHMTestDataset_Sequential(data)
 
-    test_dataloader = DataLoader(test_dataset, batch_size=64, shuffle=False, num_workers=1)
+    test_dataloader = DataLoader(test_dataset, batch_size=32, shuffle=False, num_workers=1)
 
     results = model_inference_helper(model, test_dataloader, device)
     
@@ -113,7 +113,7 @@ def series_infer(model, load_cnt, device):
     data = load_data(load_cnt)
     
     test_dataset = PHMTestDataset_Sequential(data)
-    test_dataloader = DataLoader(test_dataset, batch_size=64, shuffle=False, num_workers=1)
+    test_dataloader = DataLoader(test_dataset, batch_size=32, shuffle=False, num_workers=1)
     results = model_inference_helper(model, test_dataloader, device)
     
     return results

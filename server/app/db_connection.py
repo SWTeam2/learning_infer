@@ -50,6 +50,7 @@ def create_table_if_not_exists(conn):
 
 def insert_data(conn, csv_path, current_time):
     
+    
     cur = conn.cursor()  # cursor
     
     with open(csv_path, "r") as csv_file:
