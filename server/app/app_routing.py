@@ -30,7 +30,7 @@ async def predict(file: UploadFile):
     # Load the PyTorch model
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     model = CNN_LSTM_FP().to(device)
-    model.load_state_dict(torch.load('../model/weight/noisy0.25(1_1,1_2) _30best_model.pth', map_location=device))
+    model.load_state_dict(torch.load('../model/weight/bearing(1,noisy1) + bearing(2,noisy2)(0.25,0.3)_model.pth', map_location=device))
 
     # Do the inference
     results = infer_model(model, file_path, device)
@@ -75,7 +75,7 @@ async def seriesPredict(payload: RequestPayload):
     # Load the PyTorch model
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     model = CNN_LSTM_FP().to(device)
-    model.load_state_dict(torch.load('../model/weight/noisy0.25(1_1,1_2) _30best_model.pth', map_location=device))
+    model.load_state_dict(torch.load('../model/weight/bearing(1,noisy1) + bearing(2,noisy2)(0.25,0.3)_model.pth', map_location=device))
 
     # Do the inference
     results = series_infer(model, payload.load_cnt, device)
