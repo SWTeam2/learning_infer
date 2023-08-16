@@ -27,13 +27,13 @@ def save_results(results, file_name, fig, current_time):
     aligned_data = list(zip(results['predictions'], results['timestamps']))
     
     # Save the aligned data to a CSV file
-    with open(os.path.join('results', file_name + time + '.csv'), 'w', newline='') as csvfile:
+    with open(os.path.join('results/file', file_name + time + '.csv'), 'w', newline='') as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(['predictions', 'timestamps'])  # Write the header
         writer.writerows(aligned_data)  # Write the aligned data
     
     # Save the results to a JSON file
-    with open(os.path.join('results', file_name + time + '.json'), 'w') as jsonfile:
+    with open(os.path.join('results/file', file_name + time + '.json'), 'w') as jsonfile:
         json.dump(results, jsonfile)
 
     csvfile_path = os.path.join('results/file', file_name + time + '.csv')
