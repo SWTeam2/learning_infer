@@ -36,8 +36,8 @@ def save_results(results, file_name, fig, current_time):
     with open(os.path.join('results', file_name + time + '.json'), 'w') as jsonfile:
         json.dump(results, jsonfile)
 
-    csvfile_path = os.path.join('results', file_name + time + '.csv')
-    jsonfile_path = os.path.join('results', file_name + time + '.json')
+    csvfile_path = os.path.join('results/file', file_name + time + '.csv')
+    jsonfile_path = os.path.join('results/file', file_name + time + '.json')
     # Save the plot image
     fig_bytes = fig.savefig(os.path.join('results/plots', time + '.png'), format='png')
     return jsonfile_path, csvfile_path
