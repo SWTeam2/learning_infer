@@ -56,9 +56,6 @@ def load_data(table, load_cnt=1):
     - load_cnt: The number of times the data was loaded, used for the name of the tmp .pkz
     - host, database, user, password: Elements required for DB connection
     '''
-
-    # file path
-    main_dir = 'server'
     
     # id 계산
     DATA_POINTS_PER_FILE = 2560
@@ -82,24 +79,21 @@ def load_data(table, load_cnt=1):
     # load tmp data and append new data(as data is time series)
     # Finally delete the read file
     if load_cnt > 1:
-        pkz_file = os.path.join(
-            main_dir, 'static', f'{load_cnt-1}_tmp_bearing.pkz')
+        pkz_file = os.path.join('static', f'{load_cnt-1}_tmp_bearing.pkz')
         tmp_data = load_pkz(pkz_file)
         tmp_data['timestamps'].append(timestamp)
         data['timestamps'] = tmp_data['timestamps']
         data['x'] = np.concatenate((data['x'], tmp_data['x']))
-        os.remove(pkz_file)
+        # os.remove(pkz_file)
     else:
         pass
 
     # save tmp data
-    out_file = os.path.join(
-        main_dir, 'static', f'{load_cnt}_tmp_bearing.pkz')
+    out_file = os.path.join('static', f'{load_cnt}_tmp_bearing.pkz')
     with open(out_file, 'wb') as f:
         pkl.dump(data, f)
-
     return data
 
 
-# df = load_data('test_table_bearing1_3', load_cnt=1)
+# df = load_data('test_table_bearing1_3', load_cnt=2)
 # print(np.shape(df['x']))
