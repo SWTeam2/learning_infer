@@ -89,7 +89,7 @@ async def seriesPredict(table: str, load_cnt: int):
     
     
 @route.post("/modelpredict")
-async def predict(file: UploadFile, modelfile:UploadFile):
+async def modelpredict(file: UploadFile, modelfile:UploadFile):
     # Read the file contents
     file_path = save_uploaded_file(file)
     model_path = save_uploaded_file(modelfile)
@@ -105,17 +105,21 @@ async def predict(file: UploadFile, modelfile:UploadFile):
     '''
     model.load_state_dict(torch.load(model_path, map_location=device))
 
-    # Do the inference
+    # Do the inference + timestamp result
     results = infer_model(model, file_path, device)
     results['timestamps'] = sample_data['timestamps']
-
     results['timestamps'] = [ts.strftime('%H:%M:%S') for ts in results['timestamps']]
 
     current_time = datetime.datetime.now().replace(microsecond=0)
     # Plotting and saving
     fig, ax = plt.subplots(nrows=1, ncols=1, figsize=[10, 10])
-    ax.scatter(range(len(results['predictions'])), results['predictions'], c='b', marker='.', label='predictions')
+    ax.scatter(range(len(results['predictions'])), results['predictions'], c='b', marker='.', label='predictions') # type: ignore
+    ax.set_title(f'Model File: {modelfile.filename}')
+    ax.annotate(f"Inference File: {file.filename}",
+            xy=(0.5, 1.1), xycoords="axes fraction", 
+            ha="center", fontsize=10)
     ax.legend()
+    
     filename = 'inf_result'
     jsonfile_path, csvfile_path = save_results(results, filename, fig,current_time)
     # Load the prediction results from the original JSON file
@@ -129,7 +133,7 @@ async def predict(file: UploadFile, modelfile:UploadFile):
 
 
 @route.post("/start")
-async def predict(file: UploadFile, modelfile:UploadFile):
+async def start(file: UploadFile, modelfile:UploadFile):
 
     dbloop(csvfile_path, current_time)
     
@@ -139,7 +143,7 @@ async def predict(file: UploadFile, modelfile:UploadFile):
     )
 
 @route.get("/stop")
-async def predict(file: UploadFile, modelfile:UploadFile):
+async def stop(file: UploadFile, modelfile:UploadFile):
 
     
     return FileResponse(
