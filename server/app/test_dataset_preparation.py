@@ -61,9 +61,13 @@ def load_data(table, load_cnt):
     DATA_POINTS_PER_FILE = 2560
     id = (load_cnt-1)*DATA_POINTS_PER_FILE + 1
     
+    print(id)
+    
     # get data from DB
     df = get_df('https://win1.i4624.tk/data/', table, id)
 
+    print(df)
+    
     # signal processing = Extracting Time-Frequency Domain feature images
     data = {'timestamps': [], 'x': []}
     coef_h = extract_feature_image(df, feature_name='horiz_accel')
@@ -72,9 +76,9 @@ def load_data(table, load_cnt):
     data['x'].append(x_)
 
     # Create a datetime object with only time information
-    timestamp = datetime.datetime.min.time().replace(hour=df.loc[0, 'hour'], minute=df.loc[0, 'minutes'], second=df.loc[0, 'second'])
+    timestamp = datetime.datetime.min.time().replace(hour=df.loc[0, 'hour'], minute=df.loc[0, 'minutes'], second=df.loc[0, 'second']) # type: ignore
     data['timestamps'].append(timestamp)
-    data['x'] = np.array(data['x'])
+    data['x'] = np.array(data['x']) # type: ignore
     
     # load tmp data and append new data(as data is time series)
     # Finally delete the read file
@@ -83,7 +87,7 @@ def load_data(table, load_cnt):
         tmp_data = load_pkz(pkz_file)
         tmp_data['timestamps'].append(timestamp)
         data['timestamps'] = tmp_data['timestamps']
-        data['x'] = np.concatenate((data['x'], tmp_data['x']))
+        data['x'] = np.concatenate((data['x'], tmp_data['x'])) # type: ignore
         # os.remove(pkz_file)
     else:
         pass
