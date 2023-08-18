@@ -119,6 +119,16 @@ def series_model_inference_helper(model, dataloader, device):
         with torch.no_grad():
             y_prediction = model(x)
 
+        ## append 되도록 로직 짜서 cnt 증가할수록 리스트 증가시킴
+        '''
+        현재 -> DB API에서 전부 다 가져오는 상태 
+        가져오는건 다 되는데 , 
+        이걸 추론한 결과를 넣어야 하는데 
+        어떻게 넣냐 -> 현재 매번 누적된 새로운 데이터가 나옴 
+        
+        변해야 하는 것은 -> 마지막 추론 결과 데이터만 넣도록 ? 
+        
+        '''
         if y_prediction.size(0)>1:
             results['predictions'] += y_prediction.cpu().squeeze().tolist()
         elif y_prediction.size(0)==1:

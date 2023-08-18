@@ -50,7 +50,7 @@ def load_pkz(pkz_file):
 
 
 # main util function
-def load_data(table, load_cnt=1):
+def load_data(table, load_cnt):
     '''
     It receives vibration data through DB, converts it into an image, and returns it.
     - load_cnt: The number of times the data was loaded, used for the name of the tmp .pkz
