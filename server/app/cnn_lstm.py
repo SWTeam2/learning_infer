@@ -139,6 +139,8 @@ def series_infer(model, device, table, load_cnt):
     data = load_data(table, load_cnt)
     
     test_dataset = PHMTestDataset_Sequential(data)
+    print("test_dataset len:") 
+    print(len(test_dataset))  # Add this line to check the length
     test_dataloader = DataLoader(test_dataset, batch_size=32, shuffle=False, num_workers=1)
     results = series_model_inference_helper(model, test_dataloader, device)
     

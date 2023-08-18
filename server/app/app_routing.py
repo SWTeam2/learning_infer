@@ -77,9 +77,17 @@ async def seriesPredict(table: str, load_cnt: int):
     results['timestamps'] = sample_data['timestamps']
     results['timestamps'] = [ts.strftime('%H:%M:%S') for ts in results['timestamps']]
     
+     # Get the last timestamp and prediction
+    last_timestamp = sample_data['timestamps'][-1].strftime('%H:%M:%S')
+    last_prediction = results['predictions'][-1]
+
     infer_time = datetime.datetime.now().replace(microsecond=0)
-    
-    return results
+
+    output_result = {'timestamp': last_timestamp, 'prediction': last_prediction}
+
+    print(output_result)
+
+    return output_result
     
     # # Plotting and saving
     # fig, ax = plt.subplots(nrows=1, ncols=1, figsize=[10, 10])

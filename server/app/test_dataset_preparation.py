@@ -65,7 +65,7 @@ def load_data(table, load_cnt):
     
     # get data from DB
     df = get_df('https://win1.i4624.tk/data/', table, id)
-
+    df = df.drop(columns=['id'])
     print(df)
     
     # signal processing = Extracting Time-Frequency Domain feature images
