@@ -135,9 +135,7 @@ def series_model_inference_helper(model, dataloader, device):
             results['predictions'].append(y_prediction.cpu().squeeze().tolist())
     return results
 
-def series_infer(model, device, table, load_cnt):
-    data = load_data(table, load_cnt)
-    
+def series_infer(model, device, data):
     test_dataset = PHMTestDataset_Sequential(data)
     print("test_dataset len:") 
     print(len(test_dataset))  # Add this line to check the length

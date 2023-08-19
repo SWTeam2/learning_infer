@@ -43,12 +43,6 @@ def extract_feature_image(df, feature_name='horiz_accel'):
     return coef
 
 
-def load_pkz(pkz_file):
-    with open(pkz_file, 'rb') as f:
-        df = pkl.load(f)
-    return df
-
-
 # main util function
 def load_data(table, load_cnt):
     '''
@@ -84,14 +78,18 @@ def load_data(table, load_cnt):
     # Finally delete the read file
     if load_cnt > 1:
         pkz_file = os.path.join('static', f'{load_cnt-1}_tmp_bearing.pkz')
-        tmp_data = load_pkz(pkz_file)
+        with open(pkz_file, 'rb') as f:
+            tmp_data = pkl.load(f)
         tmp_data['timestamps'].append(timestamp)
         data['timestamps'] = tmp_data['timestamps']
-        data['x'] = np.concatenate((data['x'], tmp_data['x'])) # type: ignore
-        # os.remove(pkz_file)
+        data['x'] = np.concatenate((data['x'], tmp_data['x']))
     else:
         pass
 
+    # make tmp pkz folder
+    if not os.path.exists('static'):
+        os.makedirs('static')
+    
     # save tmp data
     out_file = os.path.join('static', f'{load_cnt}_tmp_bearing.pkz')
     with open(out_file, 'wb') as f:
