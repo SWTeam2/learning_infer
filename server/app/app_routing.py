@@ -9,7 +9,7 @@ from app.test_dataset_preparation import load_data
 import torch
 import matplotlib.pyplot as plt
 from pydantic import BaseModel
-
+import os
 import json
 
 route = FastAPI()
@@ -65,7 +65,11 @@ async def modelpredict(file: UploadFile, modelfile:UploadFile):
 
 @route.get("/predict/")
 async def seriesPredict(table: str, load_cnt: int):
-    sample_data = load_data(table, load_cnt)
+    data = load_data(table, load_cnt)
+    # delete tmp pkz
+    if load_cnt > 1:
+        pkz_file = os.path.join('static', f'{load_cnt-1}_tmp_bearing.pkz')
+        os.remove(pkz_file)
 
     # Load the PyTorch model
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -73,8 +77,8 @@ async def seriesPredict(table: str, load_cnt: int):
     model.load_state_dict(torch.load('../model/weight/bearing(1,noisy1) + bearing(2,noisy2)(0.25,0.3)_model.pth', map_location=device))
 
     # Do the inference
-    results = series_infer(model, device, table, load_cnt)
-    results['timestamps'] = sample_data['timestamps']
+    results = series_infer(model, device, data)
+    results['timestamps'] = data['timestamps']
     results['timestamps'] = [ts.strftime('%H:%M:%S') for ts in results['timestamps']]
     
     infer_time = datetime.datetime.now().replace(microsecond=0)
