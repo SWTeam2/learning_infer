@@ -82,6 +82,10 @@ def load_data(table, load_cnt=1):
     else:
         pass
 
+    # make tmp pkz folder
+    if not os.path.exists('static'):
+        os.makedirs('static')
+    
     # save tmp data
     out_file = os.path.join('static', f'{load_cnt}_tmp_bearing.pkz')
     with open(out_file, 'wb') as f:
