@@ -133,8 +133,10 @@ RUL 1이 도달하는 경우를 완전 고장이라 해석하고 점들의 분�
 
 ## requirements
 
-torch==2.0.1
-numpy==1.24.3
-pandas==2.0.3
-matplotlib==3.7.2
-fastapi==0.100.0
+```python
+torch==2.0.1 
+numpy==1.24.3 
+pandas==2.0.3 
+matplotlib==3.7.2 
+fastapi==0.100.0 
+```
