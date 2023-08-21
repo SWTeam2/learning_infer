@@ -76,7 +76,7 @@ def load_data(table, load_cnt):
     
     # load tmp data and append new data(as data is time series)
     # Finally delete the read file
-    if load_cnt > 1:
+    if load_cnt > 0:
         pkz_file = os.path.join('static', f'{load_cnt-1}_tmp_bearing.pkz')
         with open(pkz_file, 'rb') as f:
             tmp_data = pkl.load(f)
@@ -94,6 +94,7 @@ def load_data(table, load_cnt):
     out_file = os.path.join('static', f'{load_cnt}_tmp_bearing.pkz')
     with open(out_file, 'wb') as f:
         pkl.dump(data, f)
+    print(data)
     return data
 
 
