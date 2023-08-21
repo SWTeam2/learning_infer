@@ -93,10 +93,15 @@ async def seriesPredict(table: str, load_cnt: int):
     
      # Get the last timestamp and prediction
     last_timestamp = data['timestamps'][-1].strftime('%H:%M:%S')
-    last_prediction = results['predictions'][-1]
+    last_prediction = results['predictions'][0]
 
     infer_time = datetime.datetime.now().replace(microsecond=0)
-
+    print("results all")
+    print(results['timestamps'])
+    print(results['predictions'])
+    
+    
+    
     output_result = {'timestamp': last_timestamp, 'prediction': last_prediction}
 
     print(output_result)
