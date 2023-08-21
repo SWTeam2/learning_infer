@@ -24,7 +24,7 @@ def get_df(url, table, id):
 
 
 # perform CWT on 1d signals and return 2d feature image
-def extract_feature_image(df, feature_name='horiz_accel'):
+def extract_feature_image(df, feature_name):
     # Parameters or Required Variables
     DATA_POINTS_PER_FILE = 2560
     WIN_SIZE = 20
@@ -94,6 +94,7 @@ def load_data(table, load_cnt):
     out_file = os.path.join('static', f'{load_cnt}_tmp_bearing.pkz')
     with open(out_file, 'wb') as f:
         pkl.dump(data, f)
+
     return data
 
 
