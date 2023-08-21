@@ -9,14 +9,14 @@ Repository give the
 ```
 data
 │   ├── Full_Test_Set
-    ├── Learning_set
-    └── Test_set
+│   ├── Learning_set
+│   └── Test_set
 ├── model
 │   └── weight
-        └── {weight}.pth
-    └── {data processing code}
-    └── {learning and training code}
-    └── {utility code}
+│       └── {weight}.pth
+│   └── {data processing code}
+│   └── {learning and training code}
+│   └── {utility code}
 └── server
     ├── __pycache__
     ├── app
