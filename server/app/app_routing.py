@@ -84,7 +84,7 @@ async def seriesPredict(table: str, load_cnt: int):
     # Load the PyTorch model
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     model = CNN_LSTM_FP().to(device)
-    model.load_state_dict(torch.load('../model/weight/lstm_cnn_final.pth', map_location=device))
+    model.load_state_dict(torch.load('../model/weight/cnn_lstm_final.pth', map_location=device))
 
     # Do the inference
     results = series_infer(model, device, data)
