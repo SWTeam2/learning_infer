@@ -82,7 +82,7 @@ def load_data(table, load_cnt):
             tmp_data = pkl.load(f)
         tmp_data['timestamps'].append(timestamp)
         data['timestamps'] = tmp_data['timestamps']
-        data['x'] = np.concatenate((data['x'], tmp_data['x']))
+        data['x'] = np.concatenate((data['x'], tmp_data['x'])) # type: ignore
     else:
         pass
 
