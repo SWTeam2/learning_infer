@@ -60,8 +60,7 @@ GPU가 없으므로 CPU 환경에 따라 시스템 자원 상태의 영향을 �
 
 경로는 프로젝트 루트 폴더 기준 
 
-{bash}
-```
+```bash
  cd /server 
  nohup uvicorn --reload main:route --port {포트번호/port Number} --host 0.0.0.0 &
 ```
