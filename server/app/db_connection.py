@@ -61,7 +61,7 @@ def insert_data(conn, csv_path, current_time):
         for row in csv_reader:
             prediction = row[0]  # Value from the first column
             timestamp = row[1]  # Value from the second column
-            query = "INSERT INTO RUL_result1 (infer_time, RUL, RUL_time) VALUES (%s, %s, %s)"
+            query = "INSERT INTO RUL_result1 (infer_time, prediction, timestamp) VALUES (%s, %s, %s)"
             cur.execute(query, (current_time, prediction, timestamp))
             conn.commit()
             
