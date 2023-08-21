@@ -82,9 +82,18 @@ def load_data(table, load_cnt):
             tmp_data = pkl.load(f)
         tmp_data['timestamps'].append(timestamp)
         data['timestamps'] = tmp_data['timestamps']
-        data['x'] = np.concatenate((data['x'], tmp_data['x']))
+        data['x'] = np.concatenate((data['x'], tmp_data['x'])) # type: ignore
     else:
         pass
+
+        '''
+        
+        data['timestamps'] -> timestamps 마지막 n 개만 가져다가 리턴시키기 
+        data['x']  ->  x 마지막 n 개만 가져다가 리턴시키기 
+        
+        저장하는 값 자체는 전부 저장해놓기 
+        
+        '''
 
     # make tmp pkz folder
     if not os.path.exists('static'):
@@ -94,8 +103,17 @@ def load_data(table, load_cnt):
     out_file = os.path.join('static', f'{load_cnt}_tmp_bearing.pkz')
     with open(out_file, 'wb') as f:
         pkl.dump(data, f)
+    
+    slicedData = {'timestamps': [], 'x': []}
+    
+    # Get the most recent 400 data points
+    recent_data_points = 400
 
-    return data
+    # Slice the 'timestamps' and 'x' arrays to get the most recent data
+    slicedData['timestamps'] = data['timestamps'][-recent_data_points:]
+    slicedData['x'] = data['x'][-recent_data_points:] # type: ignore
+
+    return slicedData
 
 
 # df = load_data('test_table_bearing1_3', load_cnt=2)
