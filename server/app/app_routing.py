@@ -65,11 +65,20 @@ async def modelpredict(file: UploadFile, modelfile:UploadFile):
 
 @route.get("/predict/")
 async def seriesPredict(table: str, load_cnt: int):
+    
+    
+    if load_cnt < 6:
+        for i in range(1,5):
+            print("load count below 5")
+            print(i)
+            data = load_data(table, i)  
+        load_cnt = 5
+    
     data = load_data(table, load_cnt)
     
     # delete tmp pkz
-    if load_cnt > 3:
-        pkz_file = os.path.join('static', f'{load_cnt-3}_tmp_bearing.pkz')
+    if load_cnt > 7:
+        pkz_file = os.path.join('static', f'{load_cnt-2}_tmp_bearing.pkz')
         os.remove(pkz_file)
 
     # Load the PyTorch model
