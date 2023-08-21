@@ -15,7 +15,7 @@ def get_df(url, table, id):
     # REST API 경로에 접속하여 응답(Response) 데이터 받아오기
     params = {'table': table, 'id': id}
     url = url+f'{table}/{id}'
-    response = requests.get(url=url, params=params)
+    response = requests.get(url=url, params=params, verify=False)
     data = response.json()
     # python_list = json.loads(data)
     df = pd.DataFrame(data)
@@ -104,16 +104,16 @@ def load_data(table, load_cnt):
     with open(out_file, 'wb') as f:
         pkl.dump(data, f)
     
-    slicedData = {'timestamps': [], 'x': []}
+    # slicedData = {'timestamps': [], 'x': []}
     
-    # Get the most recent 400 data points
-    recent_data_points = 400
+    # # Get the most recent 400 data points
+    # recent_data_points = 400
 
-    # Slice the 'timestamps' and 'x' arrays to get the most recent data
-    slicedData['timestamps'] = data['timestamps'][-recent_data_points:]
-    slicedData['x'] = data['x'][-recent_data_points:] # type: ignore
+    # # Slice the 'timestamps' and 'x' arrays to get the most recent data
+    # slicedData['timestamps'] = data['timestamps'][-recent_data_points:]
+    # slicedData['x'] = data['x'][-recent_data_points:] # type: ignore
 
-    return slicedData
+    return data
 
 
 # df = load_data('test_table_bearing1_3', load_cnt=2)
