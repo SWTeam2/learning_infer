@@ -104,16 +104,16 @@ def load_data(table, load_cnt):
     with open(out_file, 'wb') as f:
         pkl.dump(data, f)
     
-    # slicedData = {'timestamps': [], 'x': []}
+    slicedData = {'timestamps': [], 'x': []}
     
-    # # Get the most recent 400 data points
-    # recent_data_points = 400
+    # Get the most recent 400 data points
+    recent_data_points = 400
 
-    # # Slice the 'timestamps' and 'x' arrays to get the most recent data
-    # slicedData['timestamps'] = data['timestamps'][-recent_data_points:]
-    # slicedData['x'] = data['x'][-recent_data_points:] # type: ignore
+    # Slice the 'timestamps' and 'x' arrays to get the most recent data
+    slicedData['timestamps'] = data['timestamps'][-recent_data_points:]
+    slicedData['x'] = data['x'][-recent_data_points:] # type: ignore
 
-    return data
+    return slicedData
 
 
 # df = load_data('test_table_bearing1_3', load_cnt=2)
